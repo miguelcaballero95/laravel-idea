@@ -24,11 +24,11 @@ label {
     box-shadow: 0 0 0 calc(var(--spacing) * .5) var(--color-background) 0 0 0 calc(var(--spacing) * 1) var(--color-primary);
 }
 
-@media (min-width: var(--breakpoint-md)) {
-    .input {
-        font-size: var(--text-sm);
-    }
-}
+/*@media (min-width: var(--breakpoint-md)) {*/
+/*    .input {*/
+/*        font-size: var(--text-sm);*/
+/*    }*/
+/*}*/
 
 .textarea {
     border-radius: var(--radius-md);

@@ -29,6 +29,7 @@ class IdeaController extends Controller
         $ideas = $user
             ->ideas()
             ->when($status, fn ($query, $status) => $query->where('status', $status))
+            ->latest()
             ->get();
 
         return view('idea.index', [
@@ -38,17 +39,20 @@ class IdeaController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created resource in storage.
      */
-    public function create(): void
+    public function store(StoreIdeaRequest $request)
     {
-        //
+        Auth::user()->ideas()->create($request->validated());
+
+        return to_route('idea.index')
+            ->with('success', 'Idea created successfully.');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Show the form for creating a new resource.
      */
-    public function store(StoreIdeaRequest $request): void
+    public function create(): void
     {
         //
     }
