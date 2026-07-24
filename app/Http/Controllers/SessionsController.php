@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -20,7 +22,7 @@ class SessionsController extends Controller
             'password' => ['required', Password::defaults()],
         ]);
 
-        if (!Auth::attempt($validated)) {
+        if (! Auth::attempt($validated)) {
             return back()
                 ->withErrors(['password' => 'We were unable to sign you in.'])
                 ->withInput();
@@ -32,10 +34,12 @@ class SessionsController extends Controller
 
     }
 
-    public function destroy()
+    public function destroy(Request $request)
     {
-        session()->regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         Auth::logout();
+
         return redirect('/');
     }
 }
