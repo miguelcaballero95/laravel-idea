@@ -48,7 +48,14 @@
             </div>
         </div>
         <x-modal name="create-idea" title="New Idea">
-            <form x-data="{status: 'pending'}" action="/ideas" method="POST">
+            <form
+                x-data="{
+                    status: 'pending',
+                    newLink: '',
+                    links: []
+                }"
+                action="/ideas"
+                method="POST">
                 @csrf
                 <div class="space-y-6">
                     <x-form.field
@@ -80,6 +87,43 @@
                         type="textarea"
                         placeholder="Describe your idea..."
                         autofocus/>
+                    <div>
+                        <fieldset class="space-y-3">
+                            <legend class="label">Links</legend>
+                            <template x-for="(link, index) in links">
+                                <div class="flex gap-x-2 items-center">
+                                    <input class="input" name="links[]" x-model="link">
+                                    <button
+                                        type="button"
+                                        class="form-muted-icon"
+                                        @click="links.splice(index, 1)"
+                                        aria-label="Remove link">
+                                        <x-icons.close/>
+                                    </button>
+                                </div>
+                            </template>
+                            <div class="flex gap-x-2 items-center">
+                                <input
+                                    x-model="newLink"
+                                    type="text"
+                                    id="new-link"
+                                    data-test="new-link"
+                                    placeholder="http://example.com"
+                                    autocomplete="url"
+                                    class="input flex-1"
+                                    spellcheck="false">
+                                <button
+                                    @click="links.push(newLink.trim()); newLink = '';"
+                                    :disabled="newLink.trim().length <= 0"
+                                    type="button"
+                                    data-test="submit-new-link-button"
+                                    class="form-muted-icon"
+                                    aria-label="Add a new link">
+                                    <x-icons.close class="rotate-45"/>
+                                </button>
+                            </div>
+                        </fieldset>
+                    </div>
                     <div class="flex justify-end gap-x-5">
                         <button
                             @click="$dispatch('close-modal')"
