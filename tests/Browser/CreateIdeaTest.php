@@ -17,14 +17,19 @@ it('creates a new idea', function () {
         ->click('@submit-new-link-button')
         ->fill('@new-link', 'https://laravel.com')
         ->click('@submit-new-link-button')
+        ->fill('@new-step', 'Step 1')
+        ->click('@submit-new-step-button')
+        ->fill('@new-step', 'Step 2')
+        ->click('@submit-new-step-button')
         ->click('Create')
         ->assertPathIs('/ideas');
 
     //    expect(Idea::count())->toBe(1);
-    expect($user->ideas()->first())->toMatchArray([
+    expect($idea = $user->ideas()->first())->toMatchArray([
         'title' => 'Some Idea Title',
         'status' => 'completed',
         'description' => 'Some Idea Description',
         'links' => ['https://example.com', 'https://laravel.com'],
-    ]);
+    ])->and($idea->steps)->toHaveCount(2);
+
 });

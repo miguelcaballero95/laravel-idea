@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Support\Facades\DB;
 
 class CreateIdea
 {
@@ -25,12 +26,15 @@ class CreateIdea
         if ($attributes['image'] ?? false) {
             $data['image_path'] = $attributes['image']->store('ideas', 'public');
         }
-        
-        $idea = $this->user->ideas()->create($data);
 
-        $steps = collect($attributes['steps'] ?? [])->map(fn($step) => ['description' => $step]);
+        DB::transaction(function () use ($data, $attributes) {
+            $idea = $this->user->ideas()->create($data);
 
-        $idea->steps()->createMany($steps);
+            $steps = collect($attributes['steps'] ?? [])->map(fn($step) => ['description' => $step]);
+
+            $idea->steps()->createMany($steps);
+        });
+
 
     }
 }
