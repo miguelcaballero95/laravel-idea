@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\CreateIdea;
 use App\Http\Requests\StoreIdeaRequest;
 use App\Http\Requests\UpdateIdeaRequest;
 use App\IdeaStatus;
@@ -22,13 +23,13 @@ class IdeaController extends Controller
 
         $status = $request->status;
 
-        if (! in_array($status, IdeaStatus::values())) {
+        if (!in_array($status, IdeaStatus::values())) {
             $status = null;
         }
 
         $ideas = $user
             ->ideas()
-            ->when($status, fn ($query, $status) => $query->where('status', $status))
+            ->when($status, fn($query, $status) => $query->where('status', $status))
             ->latest()
             ->get();
 
@@ -41,9 +42,10 @@ class IdeaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreIdeaRequest $request)
+    public function store(StoreIdeaRequest $request, CreateIdea $action)
     {
-        Auth::user()->ideas()->create($request->validated());
+        // (new CreateIdea())->handle($request->safe()->all());
+        $action->handle($request->safe()->all());
 
         return to_route('idea.index')
             ->with('success', 'Idea created successfully.');

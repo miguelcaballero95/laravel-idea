@@ -52,10 +52,13 @@
                 x-data="{
                     status: 'pending',
                     newLink: '',
-                    links: []
+                    links: [],
+                    newStep: '',
+                    steps: [],
                 }"
                 action="/ideas"
-                method="POST">
+                method="POST"
+                enctype="multipart/form-data">
                 @csrf
                 <div class="space-y-6">
                     <x-form.field
@@ -86,13 +89,55 @@
                         name="description"
                         type="textarea"
                         placeholder="Describe your idea..."
-                        autofocus/>
+                        autofocus
+                    />
+                    <div class="space-y-2">
+                        <label for="image" class="label">Featured Image</label>
+                        <input type="file" name="image" accept="image/*"/>
+                        <x-form.error name="image"/>
+                    </div>
+                    <div>
+                        <fieldset class="space-y-3">
+                            <legend class="label">Actionable Steps</legend>
+                            <template x-for="(step, index) in steps">
+                                <div class="flex gap-x-2 items-center">
+                                    <input class="input" name="steps[]" x-model="step" readonly>
+                                    <button
+                                        type="button"
+                                        class="form-muted-icon"
+                                        @click="steps.splice(index, 1)"
+                                        aria-label="Remove step">
+                                        <x-icons.close/>
+                                    </button>
+                                </div>
+                            </template>
+                            <div class="flex gap-x-2 items-center">
+                                <input
+                                    x-model="newStep"
+                                    type="text"
+                                    id="new-step"
+                                    data-test="new-step"
+                                    placeholder="What needs to be done?"
+                                    class="input flex-1"
+                                    spellcheck="false">
+                                <button
+                                    type="button"
+                                    @click="steps.push(newStep.trim()); newStep = '';"
+                                    data-test="submit-new-step-button"
+                                    :disabled="newStep.trim().length <= 0"
+                                    class="form-muted-icon"
+                                    aria-label="Add a new link">
+                                    <x-icons.close class="rotate-45"/>
+                                </button>
+                            </div>
+                        </fieldset>
+                    </div>
                     <div>
                         <fieldset class="space-y-3">
                             <legend class="label">Links</legend>
                             <template x-for="(link, index) in links">
                                 <div class="flex gap-x-2 items-center">
-                                    <input class="input" name="links[]" x-model="link">
+                                    <input class="input" name="links[]" x-model="link" readonly>
                                     <button
                                         type="button"
                                         class="form-muted-icon"
@@ -130,7 +175,12 @@
                             type="button">
                             Cancel
                         </button>
-                        <button type="submit" class="btn">Create</button>
+                        <button
+                            type="submit"
+                            data-test="submit-create-idea-button"
+                            class="btn">
+                            Create
+                        </button>
                     </div>
                 </div>
             </form>
