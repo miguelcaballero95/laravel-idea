@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Actions\CreateIdea;
 use App\Actions\UpdateIdea;
 use App\Http\Requests\IdeaRequest;
-use App\Http\Requests\UpdateIdeaRequest;
 use App\IdeaStatus;
 use App\Models\Idea;
 use Illuminate\Http\Request;
@@ -26,13 +25,13 @@ class IdeaController extends Controller
 
         $status = $request->status;
 
-        if (!in_array($status, IdeaStatus::values())) {
+        if (! in_array($status, IdeaStatus::values())) {
             $status = null;
         }
 
         $ideas = $user
             ->ideas()
-            ->when($status, fn($query, $status) => $query->where('status', $status))
+            ->when($status, fn ($query, $status) => $query->where('status', $status))
             ->latest()
             ->get();
 
@@ -57,9 +56,7 @@ class IdeaController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): void
-    {
-    }
+    public function create(): void {}
 
     /**
      * Display the specified resource.
@@ -90,7 +87,7 @@ class IdeaController extends Controller
 
         $idea->delete();
 
-        return to_route('idea.index');
+        return to_route('idea.index')->with('success', 'Idea deleted successfully.');
     }
 
     public function destroyImage(Idea $idea)
@@ -108,10 +105,11 @@ class IdeaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(IdeaRequest $request, Idea $idea, UpdateIdea $action): void
+    public function update(IdeaRequest $request, Idea $idea, UpdateIdea $action)
     {
         Gate::authorize('work-with', $idea);
         $action->handle($request->safe()->all(), $idea);
 
+        return back()->with('success', 'Idea updated successfully.');
     }
 }

@@ -8,19 +8,15 @@ use Illuminate\Support\Facades\DB;
 
 class CreateIdea
 {
-
-    public function __construct(#[CurrentUser] protected User $user)
-    {
-
-    }
+    public function __construct(#[CurrentUser] protected User $user) {}
 
     public function handle(array $attributes): void
     {
 
-//        $user ??= Auth::user();
+        //        $user ??= Auth::user();
 
         $data = collect($attributes)->only([
-            'title', 'description', 'status', 'links'
+            'title', 'description', 'status', 'links',
         ])->toArray();
 
         if ($attributes['image'] ?? false) {
@@ -30,11 +26,10 @@ class CreateIdea
         DB::transaction(function () use ($data, $attributes) {
             $idea = $this->user->ideas()->create($data);
 
-            $steps = collect($attributes['steps'] ?? [])->map(fn($step) => ['description' => $step]);
+            //            $steps = collect($attributes['steps'] ?? [])->map(fn($step) => ['description' => $step]);
 
-            $idea->steps()->createMany($steps);
+            $idea->steps()->createMany($attributes['steps'] ?? []);
         });
-
 
     }
 }

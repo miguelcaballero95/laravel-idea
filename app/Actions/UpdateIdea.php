@@ -9,17 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateIdea
 {
-
-    public function __construct(#[CurrentUser] protected User $user)
-    {
-
-    }
+    public function __construct(#[CurrentUser] protected User $user) {}
 
     public function handle(array $attributes, Idea $idea): void
     {
 
         $data = collect($attributes)->only([
-            'title', 'description', 'status', 'links'
+            'title', 'description', 'status', 'links',
         ])->toArray();
 
         if ($attributes['image'] ?? false) {
@@ -28,12 +24,9 @@ class UpdateIdea
 
         DB::transaction(function () use ($idea, $data, $attributes) {
             $idea->update($data);
-
-            $steps = collect($attributes['steps'] ?? [])->map(fn($step) => ['description' => $step]);
-
-            $idea->steps()->createMany($steps);
+            $idea->steps()->delete();
+            $idea->steps()->createMany($attributes['steps'] ?? []);
         });
-
 
     }
 }
