@@ -10,6 +10,7 @@
                 <a href="/login">Sign In</a>
                 <a href="/register" class="btn">Register</a>
             @else
+                <a href="/profile/edit">Edit Profile</a>
                 <form action="/logout" method="POST">
                     @csrf
                     <button class="btn">Log Out</button>
